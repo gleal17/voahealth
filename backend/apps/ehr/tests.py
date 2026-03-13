@@ -188,6 +188,35 @@ class EHRDetailTests(TestCase):
         resp = self.client.get(f"/api/ehrs/{fake_id}/")
         self.assertEqual(resp.status_code, 404)
 
+    def test_patch_transcription_success(self):
+        ehr = _make_ehr()
+        resp = self.client.patch(
+            f"/api/ehrs/{ehr.pk}/",
+            {"transcription": "Paciente refere melhora após medicação."},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 200)
+        ehr.refresh_from_db()
+        self.assertEqual(ehr.transcription, "Paciente refere melhora após medicação.")
+
+    def test_patch_transcription_empty_value(self):
+        ehr = _make_ehr()
+        resp = self.client.patch(
+            f"/api/ehrs/{ehr.pk}/",
+            {"transcription": "   "},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 400)
+
+    def test_patch_transcription_not_found(self):
+        fake_id = uuid.uuid4()
+        resp = self.client.patch(
+            f"/api/ehrs/{fake_id}/",
+            {"transcription": "Atualização"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 404)
+
 
 # ──────────────────────────────────────────────
 # Document Tests
@@ -552,6 +581,38 @@ class StreamGenerateDocumentTests(TestCase):
             format="json",
         )
         self.assertEqual(resp.status_code, 400)
+
+
+class GeminiClinicalWritingServiceTests(TestCase):
+    @override_settings(
+        GEMINI_API_KEY="test-key",
+        GEMINI_TRANSCRIPTION_MODEL="gemini-2.5-flash",
+        GEMINI_WRITER_MODEL="",
+    )
+    @patch("apps.ehr.services.clinical_writing.genai.Client")
+    def test_stream_uses_generate_content_stream(self, mock_client_cls):
+        from apps.ehr.services.clinical_writing import GeminiClinicalWritingService
+
+        chunk_one = MagicMock(text="Hello ")
+        chunk_two = MagicMock(text="World")
+
+        mock_client = mock_client_cls.return_value
+        mock_client.models.generate_content_stream.return_value = iter([chunk_one, chunk_two])
+
+        service = GeminiClinicalWritingService()
+
+        chunks = list(
+            service.stream_document(
+                transcription="Paciente relata dor.",
+                template_identifier="soap_note",
+                consultation_type="presencial",
+                extra={},
+            )
+        )
+
+        self.assertEqual(chunks, ["Hello ", "World"])
+        mock_client.models.generate_content_stream.assert_called_once()
+        mock_client.models.generate_content.assert_not_called()
 
 
 # ──────────────────────────────────────────────

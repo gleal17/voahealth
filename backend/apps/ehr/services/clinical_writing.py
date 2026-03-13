@@ -80,6 +80,17 @@ def _build_user_input(
     return "\n\n".join(parts)
 
 
+def _build_contents(user_input: str):
+    return [
+        genai.types.Content(
+            parts=[
+                genai.types.Part.from_text(text=SYSTEM_INSTRUCTION),
+                genai.types.Part.from_text(text=user_input),
+            ]
+        )
+    ]
+
+
 class GeminiClinicalWritingService(BaseClinicalWritingService):
     """Generates clinical documents using Gemini (Google GenAI)."""
 
@@ -114,14 +125,7 @@ class GeminiClinicalWritingService(BaseClinicalWritingService):
         try:
             response = client.models.generate_content(
                 model=model_name,
-                contents=[
-                    genai.types.Content(
-                        parts=[
-                            genai.types.Part.from_text(text=SYSTEM_INSTRUCTION),
-                            genai.types.Part.from_text(text=user_input),
-                        ]
-                    )
-                ],
+                contents=_build_contents(user_input),
             )
         except GeminiNotConfigured:
             raise
@@ -160,17 +164,9 @@ class GeminiClinicalWritingService(BaseClinicalWritingService):
         user_input = _build_user_input(transcription, template_identifier, consultation_type, extra)
 
         try:
-            stream = client.models.generate_content(
+            stream = client.models.generate_content_stream(
                 model=model_name,
-                contents=[
-                    genai.types.Content(
-                        parts=[
-                            genai.types.Part.from_text(text=SYSTEM_INSTRUCTION),
-                            genai.types.Part.from_text(text=user_input),
-                        ]
-                    )
-                ],
-                stream=True,
+                contents=_build_contents(user_input),
             )
             for event in stream:
                 # genai streaming events emit .delta or .text depending on SDK

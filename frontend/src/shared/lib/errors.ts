@@ -19,6 +19,32 @@ const STATUS_MESSAGES: Record<number, string> = {
   503: "Serviço temporariamente indisponível. Tente novamente em alguns instantes.",
 };
 
+export function getApiErrorMessage({
+  status,
+  detail,
+  code,
+  fallback = "Ocorreu um erro inesperado. Tente novamente.",
+}: {
+  status?: number;
+  detail?: string;
+  code?: string;
+  fallback?: string;
+}): string {
+  if (code && ERROR_CODE_MESSAGES[code]) {
+    return ERROR_CODE_MESSAGES[code];
+  }
+
+  if (detail) {
+    return detail;
+  }
+
+  if (status && STATUS_MESSAGES[status]) {
+    return STATUS_MESSAGES[status];
+  }
+
+  return fallback;
+}
+
 export function extractApiError(
   err: unknown,
   fallback = "Ocorreu um erro inesperado. Tente novamente.",
@@ -29,18 +55,12 @@ export function extractApiError(
     }
 
     const data = err.response.data as ApiError | undefined;
-
-    if (data?.code && ERROR_CODE_MESSAGES[data.code]) {
-      return ERROR_CODE_MESSAGES[data.code];
-    }
-
-    if (data?.detail) {
-      return data.detail;
-    }
-
-    if (STATUS_MESSAGES[err.response.status]) {
-      return STATUS_MESSAGES[err.response.status];
-    }
+    return getApiErrorMessage({
+      status: err.response.status,
+      detail: data?.detail,
+      code: data?.code,
+      fallback,
+    });
   }
 
   if (err instanceof Error) {

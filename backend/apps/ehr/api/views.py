@@ -17,6 +17,7 @@ from .serializers import (
     EHRCreateSerializer,
     EHRDetailSerializer,
     EHRListSerializer,
+    EHRTranscriptionSerializer,
     GenerateDocumentSerializer,
     TranscriptionUploadSerializer,
 )
@@ -39,10 +40,15 @@ class EHRListCreateView(generics.ListCreateAPIView):
         return EHRListSerializer
 
 
-class EHRDetailView(generics.RetrieveAPIView):
+class EHRDetailView(generics.RetrieveUpdateAPIView):
     queryset = EHR.objects.prefetch_related("documents")
-    serializer_class = EHRDetailSerializer
     lookup_field = "pk"
+    http_method_names = ["get", "patch"]
+
+    def get_serializer_class(self):
+        if self.request.method == "PATCH":
+            return EHRTranscriptionSerializer
+        return EHRDetailSerializer
 
 
 class DocumentListView(generics.ListAPIView):

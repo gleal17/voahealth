@@ -66,6 +66,39 @@ class EHRDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at", "updated_at"]
 
 
+class EHRTranscriptionSerializer(serializers.ModelSerializer):
+    """Serializer for PATCH — only transcription is editable."""
+
+    documents = DocumentNestedSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = EHR
+        fields = [
+            "id",
+            "patient_name",
+            "consultation_type",
+            "transcription",
+            "extra",
+            "created_at",
+            "updated_at",
+            "documents",
+        ]
+        read_only_fields = [
+            "id",
+            "patient_name",
+            "consultation_type",
+            "extra",
+            "created_at",
+            "updated_at",
+            "documents",
+        ]
+
+    def validate_transcription(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError("transcription não pode ser vazia.")
+        return value
+
+
 class EHRCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = EHR
@@ -119,4 +152,3 @@ class TranscriptionUploadSerializer(serializers.Serializer):
                 f"MIME type '{mime}' não suportado. Tipos aceitos: {', '.join(self.SUPPORTED_MIME_TYPES)}"
             )
         return value
-

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -12,10 +13,18 @@ import {
   fetchEHR,
   createEHR,
   generateDocument,
+  streamGenerateDocument,
+  updateEHRTranscription,
   updateDocument,
   transcribeAudio,
 } from "@/shared/services/ehr";
-import type { EHRDetail, EHRSummary, PaginatedResponse } from "@/shared/types/api";
+import { extractApiError } from "@/shared/lib/errors";
+import type {
+  EHRDetail,
+  EHRSummary,
+  PaginatedResponse,
+  TemplateIdentifier,
+} from "@/shared/types/api";
 
 export function useEHRs(
   page: number = 1,
@@ -61,6 +70,93 @@ export function useGenerateDocument(ehrId: string) {
       queryClient.invalidateQueries({ queryKey: ["ehr", ehrId] });
     },
   });
+}
+
+export function useUpdateEHRTranscription(ehrId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (transcription: string) =>
+      updateEHRTranscription(ehrId, transcription),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ehr", ehrId] });
+      queryClient.invalidateQueries({ queryKey: ["ehrs"] });
+    },
+  });
+}
+
+export function useStreamGenerateDocument(ehrId: string) {
+  const queryClient = useQueryClient();
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamedContent, setStreamedContent] = useState("");
+  const [streamError, setStreamError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
+  async function start(templateIdentifier: TemplateIdentifier) {
+    abortControllerRef.current?.abort();
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setIsStreaming(true);
+    setStreamedContent("");
+    setStreamError(null);
+
+    try {
+      const documentId = await streamGenerateDocument(ehrId, templateIdentifier, {
+        signal: controller.signal,
+        onChunk: (chunk) => {
+          setStreamedContent((current) => current + chunk);
+        },
+      });
+
+      await queryClient.invalidateQueries({ queryKey: ["ehr", ehrId] });
+      setStreamedContent("");
+      return documentId;
+    } catch (error) {
+      if (controller.signal.aborted) {
+        return null;
+      }
+
+      const message = extractApiError(
+        error,
+        "Erro ao gerar documento em tempo real.",
+      );
+      setStreamError(message);
+      throw error;
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
+
+      setIsStreaming(false);
+    }
+  }
+
+  function cancel() {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setIsStreaming(false);
+  }
+
+  function clearStreamError() {
+    setStreamError(null);
+  }
+
+  return {
+    start,
+    cancel,
+    clearStreamError,
+    isStreaming,
+    streamedContent,
+    streamError,
+  };
 }
 
 export function useUpdateDocument(ehrId: string) {
