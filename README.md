@@ -26,6 +26,8 @@ Por padrao de desenvolvimento local, o backend pode operar com `USE_STUBS=true`,
 
 ## Arquitetura
 
+[Diagramas](https://www.tldraw.com/f/8skPrdtqoDsMrExqJdfpK?d=v-513.504.1106.633.page)
+
 ### Estrutura do backend
 
 ```text
