@@ -1,5 +1,15 @@
 import type { EHRDetail, EHRSummary, PaginatedResponse } from "@/shared/types/api";
 
+export class ServerFetchError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ServerFetchError";
+    this.status = status;
+  }
+}
+
 function getServerApiBaseUrl() {
   const baseUrl =
     process.env.API_INTERNAL_BASE_URL ||
@@ -20,7 +30,10 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch ${path}: ${response.status}`);
+    throw new ServerFetchError(
+      `Failed to fetch ${path}: ${response.status}`,
+      response.status,
+    );
   }
 
   return response.json() as Promise<T>;

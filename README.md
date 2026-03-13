@@ -200,6 +200,7 @@ Pontos fortes observados:
 - Separacao clara entre camada HTTP (`api/`) e integracoes externas (`services/`).
 - Cobertura de testes ampla para rotas, erros, SSE e contratos internos.
 - Uso correto de `prefetch_related("documents")` no detalhe do EHR.
+- A rota de detalhe do frontend usa carregamento inicial server-side e reaproveita React Query no cliente para refetch apos geracao e edicao de documentos.
 - Tratamento consistente de erros de integracao com codigos HTTP adequados.
 - Arquitetura preparada para trocar o provider de IA sem alterar as views.
 
