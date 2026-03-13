@@ -26,25 +26,6 @@ Por padrao de desenvolvimento local, o backend pode operar com `USE_STUBS=true`,
 
 ## Arquitetura
 
-```mermaid
-flowchart LR
-    UI[Next.js App Router\nListagem / Criacao / Detalhe]
-    API[Django REST API\napps.ehr.api.views]
-    SER[Serializers DRF\nvalidacao HTTP]
-    SVC[Service Layer\ntranscription / clinical_writing]
-    STUB[Stub Services\nmodo local]
-    GENAI[Google GenAI\nGemini]
-    DB[(PostgreSQL)]
-
-    UI -->|HTTP JSON / multipart| API
-    API --> SER
-    API --> DB
-    API --> SVC
-    SVC --> STUB
-    SVC --> GENAI
-    API -->|SSE opcional| UI
-```
-
 ### Estrutura do backend
 
 ```text
@@ -214,8 +195,6 @@ Pontos de atencao:
 ## Documentacao relacionada
 
 - [Enunciado do desafio](./teste-fullstack-01-api-prontuarios.md)
-- [Planejamento inicial](./planejamento-inicial-voa-health.md)
-- [Indice dos PRDs](./docs/_build/prds/00-indice-prds.md)
 
 ## Uso de IA
 
