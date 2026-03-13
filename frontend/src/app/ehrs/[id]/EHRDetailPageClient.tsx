@@ -58,16 +58,23 @@ function DocumentCard({
   doc,
   ehrId,
   index,
+  readOnly = false,
+  statusLabel,
+  statusTone = "default",
 }: {
   doc: DocumentSummary;
   ehrId: string;
   index: number;
+  readOnly?: boolean;
+  statusLabel?: string;
+  statusTone?: "default" | "streaming";
 }) {
   const [draftContent, setDraftContent] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const updateDoc = useUpdateDocument(ehrId);
   const content = draftContent ?? doc.content;
   const isDirty = draftContent !== null && draftContent !== doc.content;
+  const showSaveActions = !readOnly;
 
   function handleSave() {
     setSaved(false);
@@ -103,9 +110,24 @@ function DocumentCard({
             <span className="text-xs text-slate-400 dark:text-slate-500">
               {formatDate(doc.created_at)}
             </span>
+            {statusLabel && (
+              <span
+                className={
+                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] " +
+                  (statusTone === "streaming"
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                    : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")
+                }
+              >
+                {statusTone === "streaming" && (
+                  <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                )}
+                {statusLabel}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2.5 px-5 py-3.5">
-            {saved && !isDirty && (
+            {showSaveActions && saved && !isDirty && (
               <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                 <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
                   <path
@@ -119,35 +141,41 @@ function DocumentCard({
                 Salvo
               </span>
             )}
-            {updateDoc.isError && (
+            {showSaveActions && updateDoc.isError && (
               <span className="text-xs text-red-600 dark:text-red-400">
                 {extractApiError(updateDoc.error, "Erro ao salvar")}
               </span>
             )}
-            <Button
-              onClick={handleSave}
-              disabled={!isDirty || updateDoc.isPending}
-              className={
-                "bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-slate-900 " +
-                (updateDoc.isPending ? "opacity-80" : "")
-              }
-            >
-              {updateDoc.isPending ? (
-                <>
-                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white dark:border-slate-900/30 dark:border-t-slate-900" />
-                  Salvando...
-                </>
-              ) : (
-                "Salvar"
-              )}
-            </Button>
+            {showSaveActions && (
+              <Button
+                onClick={handleSave}
+                disabled={!isDirty || updateDoc.isPending}
+                className={
+                  "bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-slate-900 " +
+                  (updateDoc.isPending ? "opacity-80" : "")
+                }
+              >
+                {updateDoc.isPending ? (
+                  <>
+                    <div className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white dark:border-slate-900/30 dark:border-t-slate-900" />
+                    Salvando...
+                  </>
+                ) : (
+                  "Salvar"
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
       <div className="p-5">
         <DocumentEditor
           value={content}
+          editable={!readOnly}
           onChange={(html) => {
+            if (readOnly) {
+              return;
+            }
             setDraftContent(html);
             setSaved(false);
           }}
@@ -249,6 +277,17 @@ export function EHRDetailPageClient({
   }
 
   const documents = ehr.documents ?? [];
+  const streamingDocument: DocumentSummary | null = generate.isStreaming
+    ? {
+        id: `streaming-${selectedTemplate}`,
+        template_identifier: selectedTemplate,
+        content: generate.streamedContent || "",
+        created_at: new Date().toISOString(),
+      }
+    : null;
+  const renderedDocuments = streamingDocument
+    ? [streamingDocument, ...documents]
+    : documents;
   const refreshWarning = isError
     ? extractApiError(error, "Nao foi possivel atualizar os dados mais recentes.")
     : null;
@@ -438,7 +477,7 @@ export function EHRDetailPageClient({
               {generate.isStreaming ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Gerando ao vivo...
+                  Gerando ...
                 </>
               ) : (
                 <>
@@ -521,17 +560,6 @@ export function EHRDetailPageClient({
                 </p>
               </div>
             )}
-            {generate.isStreaming && (
-              <div className="rounded-xl border border-emerald-200/70 bg-white/80 p-4 shadow-sm dark:border-emerald-900/50 dark:bg-slate-950/40">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
-                  <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Previa em tempo real
-                </div>
-                <div className="max-h-56 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-                  {generate.streamedContent || "Aguardando os primeiros trechos do documento..."}
-                </div>
-              </div>
-            )}
           </div>
         </section>
       </div>
@@ -583,11 +611,11 @@ export function EHRDetailPageClient({
           </svg>
           Documentos
           <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-slate-100 px-1.5 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-            {documents.length}
+            {renderedDocuments.length}
           </span>
         </h2>
 
-        {documents.length === 0 ? (
+        {renderedDocuments.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 py-16 text-center dark:border-slate-700">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800">
               <svg
@@ -613,8 +641,22 @@ export function EHRDetailPageClient({
           </div>
         ) : (
           <div className="space-y-4">
-            {documents.map((doc, index) => (
-              <DocumentCard key={doc.id} doc={doc} ehrId={ehrId} index={index} />
+            {renderedDocuments.map((doc, index) => (
+              <DocumentCard
+                key={doc.id}
+                doc={doc}
+                ehrId={ehrId}
+                index={index}
+                readOnly={doc.id.startsWith("streaming-")}
+                statusLabel={
+                  doc.id.startsWith("streaming-")
+                    ? generate.streamedContent
+                      ? "Gerando"
+                      : "Conectando"
+                    : undefined
+                }
+                statusTone={doc.id.startsWith("streaming-") ? "streaming" : "default"}
+              />
             ))}
           </div>
         )}
