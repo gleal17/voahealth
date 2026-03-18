@@ -36,8 +36,7 @@ services:
   frontend:
     build:
       context: ./frontend
-    # Build once, then serve the full Next.js build so CSS/static assets remain available.
-    command: sh -c "npm install --include=dev && npm run build && HOSTNAME=0.0.0.0 npm run start"
+    command: sh -c "npm install --include=dev && npm run build && HOSTNAME=0.0.0.0 node .next/standalone/server.js"
     volumes:
       - ./frontend:/app
       - /app/node_modules

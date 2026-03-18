@@ -86,6 +86,8 @@ cp .env.compose.example .env
 ./scripts/start.sh
 ```
 
+O frontend no Compose executa `npm run build` e sobe o servidor standalone gerado em `.next/standalone/server.js`, alinhado com `output: "standalone"` do Next.js.
+
 ## Variaveis de ambiente
 
 ### Backend local (`backend/.env`)
@@ -154,6 +156,7 @@ python manage.py test apps.ehr --verbosity=2
 cd frontend
 npm run lint
 npm run build
+npm run start
 ```
 
 Observacao: a suite `backend/apps/ehr/tests.py` contem 46 testes atualmente.
