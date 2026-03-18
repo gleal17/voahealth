@@ -86,8 +86,6 @@ cp .env.compose.example .env
 ./scripts/start.sh
 ```
 
-O frontend no Compose executa `npm run build` e sobe o servidor standalone gerado em `.next/standalone/server.js`, alinhado com `output: "standalone"` do Next.js.
-
 ## Variaveis de ambiente
 
 ### Backend local (`backend/.env`)
