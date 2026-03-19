@@ -7,7 +7,7 @@ cd "$ROOT_DIR"
 if [ ! -f .env ]; then
   if [ -f .env.compose.example ]; then
     cp .env.compose.example .env
-    echo ".env created from .env.compose.example — edit it to add real secrets (GEMINI_API_KEY)"
+    echo ".env created from .env.compose.example - edit it to add real secrets (GEMINI_API_KEY)"
   else
     echo "Warning: .env not found and .env.compose.example missing. Create a .env before continuing." >&2
   fi
@@ -40,5 +40,5 @@ if [ "${CREATE_SUPERUSER-}" = "1" ]; then
 fi
 
 echo
-echo "Done. Backend: http://localhost:8000 — Frontend: http://localhost:3000"
+echo "Done. Backend: http://localhost:8000 - Frontend: http://localhost:3000"
 echo "Use 'docker compose logs -f' to follow logs and 'docker compose down' to stop the stack."

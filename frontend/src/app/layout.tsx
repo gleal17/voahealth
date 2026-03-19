@@ -33,10 +33,7 @@ export default function RootLayout({
                 className="flex items-center gap-2.5 text-base font-semibold tracking-tight text-slate-900 dark:text-white"
               >
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold shadow-md shadow-emerald-500/25">
-                  V
-                </span>
-                <span>
-                  Voa<span className="text-emerald-600 dark:text-emerald-400"> Health</span>
+                  CDG
                 </span>
               </Link>
               <div className="flex items-center gap-1">

@@ -23,8 +23,8 @@ STUB_SOAP = (
 
 STUB_PRESCRIPTION = (
     "PRESCRIÇÃO MÉDICA\n\n"
-    "1. Ibuprofeno 400 mg — 1 comprimido VO 8/8h por 5 dias\n"
-    "2. Dipirona 500 mg — 1 comprimido VO 6/6h se dor (SOS)\n\n"
+    "1. Ibuprofeno 400 mg - 1 comprimido VO 8/8h por 5 dias\n"
+    "2. Dipirona 500 mg - 1 comprimido VO 6/6h se dor (SOS)\n\n"
     "Orientações: manter hidratação, evitar automedicação e retornar se piora."
 )
 
@@ -33,7 +33,7 @@ STUB_REFERRAL = (
     "Motivo: Cefaleia tensional recorrente, sem melhora com analgésicos comuns.\n"
     "Resumo clínico: Paciente feminina, 45a, episódios de cefaleia há 3 dias. "
     "PA 130/85, sem sinais focais. Uso de paracetamol sem resposta.\n"
-    "Destino: Neurologia — investigação complementar e conduta especializada."
+    "Destino: Neurologia - investigação complementar e conduta especializada."
 )
 
 STUB_TEMPLATES = {

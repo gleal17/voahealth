@@ -1,4 +1,4 @@
-# Voa Health - API de Prontuários com Geração de Documentos Clinicos
+# Clinical Document Generator - API de Prontuários com Geração de Documentos Clinicos
 
 Aplicacao fullstack para gerenciamento de prontuarios eletronicos (EHRs), com transcricao de audio e geracao de documentos clinicos estruturados.
 
@@ -23,10 +23,6 @@ Por padrao de desenvolvimento local, o backend pode operar com `USE_STUBS=true`,
 | Integracao LLM | Google GenAI (`google-genai`) ou stubs locais |
 | Estilizacao | Tailwind CSS 3 |
 | Estado e formularios | TanStack Query 5 · react-hook-form 7 · Zod |
-
-## Arquitetura
-
-[Diagramas](https://www.tldraw.com/f/8skPrdtqoDsMrExqJdfpK?d=v-513.504.1106.633.page)
 
 ### Estrutura do backend
 
@@ -66,7 +62,7 @@ python manage.py runserver
 
 API em `http://localhost:8000/api/`.
 
-Observacao: o backend local usa PostgreSQL via `DATABASE_URL`. Um valor compativel com o banco exposto pelo `docker compose` do projeto e `postgres://voahealth:voahealth@127.0.0.1:5432/voahealth`.
+Observacao: o backend local usa PostgreSQL via `DATABASE_URL`. Um valor compativel com o banco exposto pelo `docker compose` do projeto e `postgres://cdg:cdg@127.0.0.1:5432/cdg`.
 
 ### Frontend
 
@@ -96,7 +92,7 @@ cp .env.compose.example .env
 | `SECRET_KEY` | Chave secreta Django | vazio em `.env.example` |
 | `ALLOWED_HOSTS` | Hosts permitidos | `127.0.0.1,localhost` |
 | `CORS_ALLOWED_ORIGINS` | Origens permitidas | `http://localhost:3000` |
-| `DATABASE_URL` | Banco usado no desenvolvimento local | `postgres://voahealth:voahealth@127.0.0.1:5432/voahealth` |
+| `DATABASE_URL` | Banco usado no desenvolvimento local | `postgres://cdg:cdg@127.0.0.1:5432/cdg` |
 | `GEMINI_API_KEY` | Chave da Gemini para integracao real | vazio |
 | `GEMINI_TRANSCRIPTION_MODEL` | Modelo de transcricao | `gemini-2.5-flash` no codigo |
 | `GEMINI_WRITER_MODEL` | Modelo de geracao de documentos | `gemini-2.5-flash` no `.env.example` |
@@ -194,14 +190,3 @@ Pontos de atencao:
 - `DocumentListView` e `DocumentPartialUpdateView` fazem uma consulta extra para verificar se o EHR existe antes de buscar o documento.
 - O endpoint SSE opcional nao aparece como persistencia parcial ou cancelamento; em caso de desconexao do cliente, o processamento continua.
 - Nao foi possivel executar `manage.py check` e `manage.py test` neste ambiente porque Django nao esta instalado localmente no shell atual.
-
-## Documentacao relacionada
-
-- [Enunciado do desafio](./teste-fullstack-01-api-prontuarios.md)
-
-## Uso de IA
-
-Este projeto declara uso de IA generativa como assistente de desenvolvimento. No produto, a IA e usada em duas frentes:
-
-- Transcricao de audio.
-- Geracao de documentos clinicos estruturados.

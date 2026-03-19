@@ -3,9 +3,9 @@ services:
     image: postgres:16
     restart: unless-stopped
     environment:
-      POSTGRES_DB: voahealth
-      POSTGRES_USER: voahealth
-      POSTGRES_PASSWORD: voahealth
+      POSTGRES_DB: cdg
+      POSTGRES_USER: cdg
+      POSTGRES_PASSWORD: cdg
     ports:
       - "5432:5432"
     volumes:
@@ -23,7 +23,7 @@ services:
       - SECRET_KEY=change-me
       - ALLOWED_HOSTS=*
       - CORS_ALLOWED_ORIGINS=http://localhost:3000
-      - DATABASE_URL=${DATABASE_URL-postgres://voahealth:voahealth@db:5432/voahealth}
+      - DATABASE_URL=${DATABASE_URL-postgres://cdg:cdg@db:5432/cdg}
       - GEMINI_API_KEY=${GEMINI_API_KEY-}
       - GEMINI_TRANSCRIPTION_MODEL=${GEMINI_TRANSCRIPTION_MODEL-gemini-2.5-flash}
       - GEMINI_WRITER_MODEL=${GEMINI_WRITER_MODEL-gemini-2.5-flash}

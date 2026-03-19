@@ -3,7 +3,7 @@ Pydantic models for internal validation of provider integration contracts.
 
 These models validate data flowing between our service layer and external
 LLM providers (Gemini). They do NOT replace DRF serializers for
-the public API — they reinforce correctness at the integration boundary.
+the public API - they reinforce correctness at the integration boundary.
 """
 
 from __future__ import annotations

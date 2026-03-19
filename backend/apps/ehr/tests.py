@@ -1,5 +1,5 @@
 """
-Backend test suite — PRD 13 + PRD 17.
+Backend test suite - PRD 13 + PRD 17.
 
 Covers every mandatory route in the API contract (PRD 06) with
 deterministic doubles for external services (Gemini),

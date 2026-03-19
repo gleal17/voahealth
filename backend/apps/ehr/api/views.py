@@ -78,7 +78,7 @@ class DocumentPartialUpdateView(generics.UpdateAPIView):
 
 
 class GenerateDocumentView(APIView):
-    """POST /api/ehrs/{id}/generate/ — generates a clinical document."""
+    """POST /api/ehrs/{id}/generate/ - generates a clinical document."""
 
     def post(self, request, ehr_pk):
         serializer = GenerateDocumentSerializer(data=request.data)
@@ -108,7 +108,7 @@ class GenerateDocumentView(APIView):
 
 
 class TranscriptionView(APIView):
-    """POST /api/transcriptions/ — transcribes audio via Gemini."""
+    """POST /api/transcriptions/ - transcribes audio via Gemini."""
 
     parser_classes = [MultiPartParser]
 
@@ -138,7 +138,7 @@ class SSERenderer:
 
 
 class StreamGenerateDocumentView(APIView):
-    """POST /api/ehrs/{id}/generate/stream/ — SSE streaming document generation.
+    """POST /api/ehrs/{id}/generate/stream/ - SSE streaming document generation.
 
     Optional bonus endpoint. The standard POST /generate/ remains the
     primary (non-streaming) interface.  This endpoint streams the content

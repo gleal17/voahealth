@@ -5,7 +5,7 @@ export default function Home() {
     <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-3xl items-center justify-center px-6 py-16">
       <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
-          Voa Health
+          Clinical Document Generator
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
           Abrindo prontuarios

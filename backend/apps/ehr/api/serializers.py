@@ -11,7 +11,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class DocumentContentSerializer(serializers.ModelSerializer):
-    """Serializer for PATCH — only content is editable."""
+    """Serializer for PATCH - only content is editable."""
 
     class Meta:
         model = Document
@@ -67,7 +67,7 @@ class EHRDetailSerializer(serializers.ModelSerializer):
 
 
 class EHRTranscriptionSerializer(serializers.ModelSerializer):
-    """Serializer for PATCH — only transcription is editable."""
+    """Serializer for PATCH - only transcription is editable."""
 
     documents = DocumentNestedSerializer(many=True, read_only=True)
 

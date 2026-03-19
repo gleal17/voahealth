@@ -20,10 +20,10 @@ SYSTEM_INSTRUCTION = (
 TEMPLATE_INSTRUCTIONS = {
     "soap_note": (
         "Gere uma nota SOAP com exatamente estas seções, cada uma em sua própria linha:\n"
-        "S: (Subjetivo — queixa principal e história relatada pelo paciente)\n"
-        "O: (Objetivo — achados do exame físico e dados clínicos observáveis)\n"
-        "A: (Avaliação — hipótese diagnóstica ou diagnóstico)\n"
-        "P: (Plano — conduta terapêutica, exames e orientações)"
+        "S: (Subjetivo - queixa principal e história relatada pelo paciente)\n"
+        "O: (Objetivo - achados do exame físico e dados clínicos observáveis)\n"
+        "A: (Avaliação - hipótese diagnóstica ou diagnóstico)\n"
+        "P: (Plano - conduta terapêutica, exames e orientações)"
     ),
     "prescription": (
         "Gere uma prescrição médica estruturada contendo:\n"

@@ -25,7 +25,7 @@ class EHR(models.Model):
         verbose_name_plural = "EHRs"
 
     def __str__(self):
-        return f"{self.patient_name} — {self.created_at:%Y-%m-%d}"
+        return f"{self.patient_name} - {self.created_at:%Y-%m-%d}"
 
 
 class Document(models.Model):
@@ -53,4 +53,4 @@ class Document(models.Model):
         verbose_name_plural = "Documents"
 
     def __str__(self):
-        return f"{self.template_identifier} — {self.ehr.patient_name}"
+        return f"{self.template_identifier} - {self.ehr.patient_name}"
