@@ -40,6 +40,25 @@ TEMPLATE_INSTRUCTIONS = {
 }
 
 
+def _coerce_stream_text(value) -> str | None:
+    if isinstance(value, str):
+        return value
+    return None
+
+
+def _extract_stream_text(event) -> str | None:
+    """Support SDK variants without treating mock attributes as real chunks."""
+    delta = _coerce_stream_text(getattr(event, "delta", None))
+    if delta is not None:
+        return delta
+
+    text = _coerce_stream_text(getattr(event, "text", None))
+    if text is not None:
+        return text
+
+    return None
+
+
 class GeminiNotConfigured(APIException):
     status_code = 503
     default_detail = "Serviço de escrita clínica não configurado."
@@ -169,11 +188,10 @@ class GeminiClinicalWritingService(BaseClinicalWritingService):
                 contents=_build_contents(user_input),
             )
             for event in stream:
-                # genai streaming events emit .delta or .text depending on SDK
-                if hasattr(event, "delta"):
-                    yield getattr(event, "delta")
-                elif hasattr(event, "text"):
-                    yield getattr(event, "text")
+                # genai streaming events may emit .delta or .text depending on SDK
+                chunk = _extract_stream_text(event)
+                if chunk is not None:
+                    yield chunk
         except GeminiNotConfigured:
             raise
         except Exception as exc:
