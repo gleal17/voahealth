@@ -1,4 +1,6 @@
-# Clinical Document Generator - API de Prontuários com Geração de Documentos Clinicos
+# Clinical Document Generator 
+
+## API de Prontuários com Geração de Documentos Clinicos
 
 Aplicacao fullstack para gerenciamento de prontuarios eletronicos (EHRs), com transcricao de audio e geracao de documentos clinicos estruturados.
 
